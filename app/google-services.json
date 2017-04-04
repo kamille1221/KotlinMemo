@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "284505799210",
+    "firebase_url": "https://kotlinmemo-edb4f.firebaseio.com",
+    "project_id": "kotlinmemo-edb4f",
+    "storage_bucket": "kotlinmemo-edb4f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284505799210:android:027c1a40771b5583",
+        "android_client_info": {
+          "package_name": "com.example.david.kotlinmemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284505799210-h7agtllcp163v6o0guad2de9b8p0hp8m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.david.kotlinmemo",
+            "certificate_hash": "6ff3c7a3b83988db2d043719f2597dd6f26ed51c"
+          }
+        },
+        {
+          "client_id": "284505799210-0io4buhlnor8p3bbco46vhk29iqvj9pk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUw1l0ePfArSHUVBZdGjOp_h8-IRbkENQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284505799210-0io4buhlnor8p3bbco46vhk29iqvj9pk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
