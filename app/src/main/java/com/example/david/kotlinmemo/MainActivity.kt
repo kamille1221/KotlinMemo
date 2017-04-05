@@ -73,6 +73,7 @@ class MainActivity: AppCompatActivity() {
 		val resource: Int = R.layout.dialog_add_memo
 		val view = this.layoutInflater.inflate(resource, null)
 		val builder = AlertDialog.Builder(this)
+		builder.setTitle("new Memo")
 		builder.setView(view)
 		builder.setPositiveButton("Save", { _, _ ->
 			val title: String = view.etTitle.text.toString()
