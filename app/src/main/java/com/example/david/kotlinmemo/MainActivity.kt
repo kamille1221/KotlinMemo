@@ -13,6 +13,7 @@ import android.widget.Toast
 import com.google.firebase.analytics.FirebaseAnalytics
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import io.realm.RealmResults
 import io.realm.Sort
 import io.realm.exceptions.RealmMigrationNeededException
 import kotlinx.android.synthetic.main.activity_main.*
@@ -66,8 +67,6 @@ class MainActivity: AppCompatActivity() {
 		memo.content = content
 		memo.date = date
 		realm.commitTransaction()
-		// ToDo Change MemoAdapter.kt from RecyclerView.Adapter to RealmBaseAdapter for Sync
-		onResume()
 	}
 
 	fun addMemo() {
@@ -88,9 +87,8 @@ class MainActivity: AppCompatActivity() {
 		builder.create().show()
 	}
 
-	fun getMemos(): List<Memo>? {
-		val memos = realm.where(Memo::class.java).findAllSorted("date", Sort.DESCENDING)
-		return memos.toList()
+	fun getMemos(): RealmResults<Memo>? {
+		return realm.where(Memo::class.java).findAllSorted("date", Sort.DESCENDING)
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
