@@ -18,7 +18,7 @@ import io.realm.Sort
 import io.realm.exceptions.RealmMigrationNeededException
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.android.synthetic.main.dialog_memo.view.*
+import kotlinx.android.synthetic.main.dialog_add_memo.view.*
 import kotlin.properties.Delegates
 
 
@@ -70,7 +70,7 @@ class MainActivity: AppCompatActivity() {
 	}
 
 	fun addMemo() {
-		val resource: Int = R.layout.dialog_memo
+		val resource: Int = R.layout.dialog_add_memo
 		val view = this.layoutInflater.inflate(resource, null)
 		val builder = AlertDialog.Builder(this)
 		builder.setView(view)

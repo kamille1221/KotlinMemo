@@ -1,36 +1,56 @@
 package com.example.david.kotlinmemo
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.realm.OrderedRealmCollection
 import io.realm.RealmRecyclerViewAdapter
 import kotlinx.android.synthetic.main.card_memo.view.*
+import kotlinx.android.synthetic.main.dialog_add_memo.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MemoAdapter(context: Context, var memos: List<Memo>?, autoUpdate: Boolean = true): RealmRecyclerViewAdapter<Memo, RecyclerView.ViewHolder>(context, memos as OrderedRealmCollection<Memo>?, autoUpdate) {
+class MemoAdapter(var mContext: Context, var mMemos: List<Memo>?, autoUpdate: Boolean = true): RealmRecyclerViewAdapter<Memo, RecyclerView.ViewHolder>(mContext, mMemos as OrderedRealmCollection<Memo>?, autoUpdate) {
 
 	override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
-		(holder as ViewHolder).bindMemo(memos!![position])
+		(holder as MemoHolder).bindMemo(mMemos!![position])
 	}
 
 	override fun getItemCount(): Int {
-		return memos?.size ?: 0
+		return mMemos?.size ?: 0
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-		return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.card_memo, parent, false))
+		return MemoHolder(LayoutInflater.from(parent.context).inflate(R.layout.card_memo, parent, false)).listen { position, type ->
+			val memo = mMemos?.get(position)
+			if (memo != null) {
+				showMemo(memo.title, memo.content)
+			}
+		}
 	}
 
-	internal inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-		fun bindMemo(memo: Memo) {
-			itemView.tvTitle.text = memo.title
-			itemView.tvContent.text = memo.content
-			itemView.tvDate.text = getDate(memo.date)
+	fun <T: RecyclerView.ViewHolder> T.listen(event: (position: Int, type: Int) -> Unit): T {
+		itemView.setOnClickListener {
+			event.invoke(adapterPosition, itemViewType)
 		}
+		return this
+	}
+
+	fun showMemo(title: String, content: String) {
+		val resource: Int = R.layout.dialog_add_memo
+		val view = (mContext as Activity).layoutInflater.inflate(resource, null)
+		val builder = AlertDialog.Builder(mContext)
+		builder.setView(view)
+		view.etTitle.text = SpannableStringBuilder(title)
+		view.etContent.text = SpannableStringBuilder(content)
+		builder.setPositiveButton("Edit", null)
+		builder.setNegativeButton("Cancel", null)
+		builder.create().show()
 	}
 
 	fun getDate(milliSecond: Long): String {
@@ -38,5 +58,13 @@ class MemoAdapter(context: Context, var memos: List<Memo>?, autoUpdate: Boolean 
 		val calendar = Calendar.getInstance()
 		calendar.timeInMillis = milliSecond
 		return simpleDateFormat.format(calendar.time)
+	}
+
+	internal inner class MemoHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+		fun bindMemo(memo: Memo) {
+			itemView.tvTitle.text = memo.title
+			itemView.tvContent.text = memo.content
+			itemView.tvDate.text = getDate(memo.date)
+		}
 	}
 }
