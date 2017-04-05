@@ -1,9 +1,11 @@
 package com.example.david.kotlinmemo
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
+import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -15,7 +17,9 @@ import io.realm.Sort
 import io.realm.exceptions.RealmMigrationNeededException
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.dialog_memo.view.*
 import kotlin.properties.Delegates
+
 
 class MainActivity: AppCompatActivity() {
 	private val TAG: String = "MainActivity"
@@ -63,11 +67,25 @@ class MainActivity: AppCompatActivity() {
 		memo.date = date
 		realm.commitTransaction()
 		// ToDo Change MemoAdapter.kt from RecyclerView.Adapter to RealmBaseAdapter for Sync
+		onResume()
 	}
 
 	fun addMemo() {
-		Toast.makeText(this, "memo add Test", Toast.LENGTH_SHORT).show()
-		commitRealm("Title01", "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", System.currentTimeMillis())
+		val resource: Int = R.layout.dialog_memo
+		val view = this.layoutInflater.inflate(resource, null)
+		val builder = AlertDialog.Builder(this)
+		builder.setView(view)
+		builder.setPositiveButton("Save", { _, _ ->
+			val title: String = view.etTitle.text.toString()
+			val content: String = view.etContent.text.toString()
+			if (TextUtils.isEmpty(title) || TextUtils.isEmpty(content)) {
+				Toast.makeText(this, "You must input a title and content :(", Toast.LENGTH_SHORT).show()
+			} else {
+				commitRealm(title, content, System.currentTimeMillis())
+			}
+		})
+		builder.setNegativeButton("Cancel", null)
+		builder.create().show()
 	}
 
 	fun getMemos(): List<Memo>? {
