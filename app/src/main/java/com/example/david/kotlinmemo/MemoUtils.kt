@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object MemoUtils {
+	val MEMO_ID: String = "id"
+
 	private val PREFERENCE_NAME = "com.example.david.kotlinmemo"
 	private val PASSWORD = "memo_password"
 	private var sharedPreferences: SharedPreferences? = null

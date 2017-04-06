@@ -1,10 +1,30 @@
 <resources>
-	<string name="app_name">KotlinMemo</string>
-	<string name="set_password">Set Password</string>
+	<string name="app_name">Kotlin Memo</string>
+	<string name="memo_locked">If you want to see your memo, You must input Password :)</string>
+
 	<string name="hint_title">Title</string>
 	<string name="hint_content">Content</string>
 	<string name="hint_password">Input your Password</string>
 	<string name="hint_password2">Input your Password again</string>
-	<string name="memo_locked">If you want to see your memo, You must input Password :)</string>
+
+	<string name="title_new_memo">new Memo</string>
+	<string name="title_edit_memo">edit Memo</string>
+	<string name="title_set_password">set Password</string>
+
+	<string name="toast_empty_memo">You must input a title and content :(</string>
+	<string name="toast_save_memo">Memo has been saved successfully :D</string>
+	<string name="toast_empty_password">You must input the password :(</string>
+	<string name="toast_incorrect_password">Incorrect password entered. Please try again X(</string>
+	<string name="toast_login_success">Login success :)</string>
+	<string name="toast_empty_passwords">You must input the password twice :(</string>
+	<string name="toast_short_password">Passwords must be at least 8 characters :(</string>
+	<string name="toast_different_password">Please enter the same password :(</string>
+	<string name="toast_save_password">Your password was saved successfully :)</string>
+	<string name="toast_remove_password">Your password has been removed :)</string>
+
+	<string name="save">Save</string>
+	<string name="edit">Edit</string>
 	<string name="login">Login</string>
+	<string name="cancel">Cancel</string>
+	<string name="remove">Remove</string>
 </resources>

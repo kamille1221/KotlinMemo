@@ -46,7 +46,7 @@ class MemoAdapter(var mContext: Context, var mMemos: RealmResults<Memo>?, var re
 
 	fun updateRealm(id: Int, title: String, content: String, date: Long) {
 		realm.beginTransaction()
-		val memo = realm.where(Memo::class.java).equalTo("id", id).findFirst()
+		val memo = realm.where(Memo::class.java).equalTo(MemoUtils.MEMO_ID, id).findFirst()
 		memo.title = title
 		memo.content = content
 		memo.date = date
@@ -56,7 +56,7 @@ class MemoAdapter(var mContext: Context, var mMemos: RealmResults<Memo>?, var re
 
 	fun deleteRealm(id: Int) {
 		realm.beginTransaction()
-		val deleteResult: RealmResults<Memo> = realm.where(Memo::class.java).equalTo("id", id).findAll()
+		val deleteResult: RealmResults<Memo> = realm.where(Memo::class.java).equalTo(MemoUtils.MEMO_ID, id).findAll()
 		deleteResult.deleteAllFromRealm()
 		realm.commitTransaction()
 	}
@@ -65,13 +65,13 @@ class MemoAdapter(var mContext: Context, var mMemos: RealmResults<Memo>?, var re
 		val resource: Int = R.layout.dialog_edit_memo
 		val view = (mContext as Activity).layoutInflater.inflate(resource, null)
 		val builder = AlertDialog.Builder(mContext)
-		builder.setTitle("edit Memo")
+		builder.setTitle(mContext.getString(R.string.title_edit_memo))
 		builder.setView(view)
 		view.etTitle.text = SpannableStringBuilder(title)
 		view.etContent.text = SpannableStringBuilder(content)
-		builder.setPositiveButton("Edit", null)
-		builder.setNeutralButton("Remove", null)
-		builder.setNegativeButton("Cancel", null)
+		builder.setPositiveButton(mContext.getString(R.string.edit), null)
+		builder.setNeutralButton(mContext.getString(R.string.remove), null)
+		builder.setNegativeButton(mContext.getString(R.string.cancel), null)
 		val alertDialog: AlertDialog = builder.create()
 		alertDialog.setOnShowListener { dialog ->
 			val positiveButton: Button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
@@ -79,7 +79,7 @@ class MemoAdapter(var mContext: Context, var mMemos: RealmResults<Memo>?, var re
 				val newTitle: String = view.etTitle.text.toString()
 				val newContent: String = view.etContent.text.toString()
 				if (TextUtils.isEmpty(newTitle) || TextUtils.isEmpty(newContent)) {
-					Toast.makeText(mContext, "You must input a title and content :(", Toast.LENGTH_SHORT).show()
+					Toast.makeText(mContext, mContext.getString(R.string.toast_empty_memo), Toast.LENGTH_SHORT).show()
 				} else {
 					updateRealm(id, newTitle, newContent, System.currentTimeMillis())
 					dialog.dismiss()
