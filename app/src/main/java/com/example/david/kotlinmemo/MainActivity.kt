@@ -2,6 +2,8 @@ package com.example.david.kotlinmemo
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
@@ -9,6 +11,8 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import com.google.firebase.analytics.FirebaseAnalytics
 import io.realm.Realm
@@ -19,13 +23,16 @@ import io.realm.exceptions.RealmMigrationNeededException
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.dialog_add_memo.view.*
+import kotlinx.android.synthetic.main.dialog_login.view.*
+import kotlinx.android.synthetic.main.dialog_set_password.view.*
 import kotlin.properties.Delegates
 
 
-class MainActivity: AppCompatActivity() {
+class MainActivity: AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 	private val TAG: String = "MainActivity"
 	private var realm: Realm by Delegates.notNull()
 	private var realmConfig: RealmConfiguration by Delegates.notNull()
+	private var isLocked = true
 	lateinit private var mFirebaseAnalytics: FirebaseAnalytics
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,17 +42,37 @@ class MainActivity: AppCompatActivity() {
 		val toolbar = findViewById(R.id.toolbar) as Toolbar
 		setSupportActionBar(toolbar)
 
-		fab.setOnClickListener { addMemo() }
+		srlMain.setOnRefreshListener(this)
+		srlMain.setColorSchemeColors(ContextCompat.getColor(this, R.color.colorAccent))
+
 		rvMain.setHasFixedSize(true)
 		rvMain.layoutManager = LinearLayoutManager(this)
 
+		fab.setOnClickListener { addMemo() }
+		btnLogin.setOnClickListener { login() }
+
 		mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
+		MemoUtils.getSharedPreferences(this)
 		initRealm()
 	}
 
 	override fun onResume() {
 		super.onResume()
-		rvMain.adapter = MemoAdapter(this, getMemos())
+		lockView()
+		if (!TextUtils.isEmpty(MemoUtils.getPassword()) && isLocked) {
+			login()
+		} else {
+			rvMain.adapter = MemoAdapter(this, getMemos())
+			hideRefreshing()
+		}
+	}
+
+	override fun onPause() {
+		super.onPause()
+		if (!TextUtils.isEmpty(MemoUtils.getPassword())) {
+			isLocked = true
+			rvMain.adapter = null
+		}
 	}
 
 	fun initRealm() {
@@ -75,21 +102,123 @@ class MainActivity: AppCompatActivity() {
 		val builder = AlertDialog.Builder(this)
 		builder.setTitle("new Memo")
 		builder.setView(view)
-		builder.setPositiveButton("Save", { _, _ ->
-			val title: String = view.etTitle.text.toString()
-			val content: String = view.etContent.text.toString()
-			if (TextUtils.isEmpty(title) || TextUtils.isEmpty(content)) {
-				Toast.makeText(this, "You must input a title and content :(", Toast.LENGTH_SHORT).show()
-			} else {
-				commitRealm(title, content, System.currentTimeMillis())
-			}
-		})
+		builder.setPositiveButton("Save", null)
 		builder.setNegativeButton("Cancel", null)
-		builder.create().show()
+		val alertDialog: AlertDialog = builder.create()
+		alertDialog.setOnShowListener { dialog ->
+			val positiveButton: Button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+			positiveButton.setOnClickListener {
+				val title: String = view.etTitle.text.toString()
+				val content: String = view.etContent.text.toString()
+				if (TextUtils.isEmpty(title) || TextUtils.isEmpty(content)) {
+					Toast.makeText(this, "You must input a title and content :(", Toast.LENGTH_SHORT).show()
+				} else {
+					commitRealm(title, content, System.currentTimeMillis())
+					dialog.dismiss()
+				}
+			}
+		}
+		alertDialog.show()
 	}
 
 	fun getMemos(): RealmResults<Memo>? {
 		return realm.where(Memo::class.java).findAllSorted("date", Sort.DESCENDING)
+	}
+
+	fun setPassword() {
+		val resource: Int = R.layout.dialog_set_password
+		val view = this.layoutInflater.inflate(resource, null)
+		val builder = AlertDialog.Builder(this)
+		builder.setTitle("set Password")
+		builder.setView(view)
+		builder.setPositiveButton("Save", null)
+		builder.setNegativeButton("Cancel", null)
+		val alertDialog: AlertDialog = builder.create()
+		alertDialog.setOnShowListener { dialog ->
+			val positiveButton: Button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+			positiveButton.setOnClickListener {
+				val password1: String = view.etPassword1.text.toString()
+				val password2: String = view.etPassword2.text.toString()
+				if (TextUtils.isEmpty(password1) || TextUtils.isEmpty(password2)) {
+					if (TextUtils.isEmpty(MemoUtils.getPassword())) {
+						Toast.makeText(this, "You must input the password twice :(", Toast.LENGTH_SHORT).show()
+					} else {
+						Toast.makeText(this, "Your password has been removed :)", Toast.LENGTH_SHORT).show()
+						MemoUtils.setPassword("")
+						dialog.dismiss()
+					}
+				} else if (password1.length < 8) {
+					Toast.makeText(this, "Passwords must be at least 8 characters :(", Toast.LENGTH_SHORT).show()
+				} else if (password1 != password2) {
+					Toast.makeText(this, "Please enter the same password :(", Toast.LENGTH_SHORT).show()
+				} else {
+					Toast.makeText(this, "Your password was saved successfully :)", Toast.LENGTH_SHORT).show()
+					MemoUtils.setPassword(password1)
+					isLocked = true
+					dialog.dismiss()
+					onResume()
+				}
+			}
+		}
+		alertDialog.show()
+	}
+
+	fun login() {
+		val resource: Int = R.layout.dialog_login
+		val view = this.layoutInflater.inflate(resource, null)
+		val builder = AlertDialog.Builder(this)
+		builder.setTitle("Login")
+		builder.setView(view)
+		builder.setPositiveButton("Login", null)
+		builder.setNegativeButton("Cancel", null)
+		val alertDialog: AlertDialog = builder.create()
+		alertDialog.setOnShowListener { dialog ->
+			val positiveButton: Button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+			positiveButton.setOnClickListener {
+				val password: String = view.etPassword.text.toString()
+				if (TextUtils.isEmpty(password)) {
+					Toast.makeText(this, "You must input a ID and password :(", Toast.LENGTH_SHORT).show()
+				} else if (password != MemoUtils.getPassword()) {
+					Toast.makeText(this, "Incorrect password entered. Please try again X(", Toast.LENGTH_SHORT).show()
+				} else {
+					if (!TextUtils.isEmpty(password) && password == MemoUtils.getPassword()) {
+						Toast.makeText(this, "Login success :)", Toast.LENGTH_SHORT).show()
+						isLocked = false
+						onResume()
+						dialog.dismiss()
+					}
+				}
+			}
+		}
+		alertDialog.show()
+	}
+
+	fun lockView() {
+		if (!TextUtils.isEmpty(MemoUtils.getPassword()) && isLocked) {
+			llLocked.visibility = View.VISIBLE
+			srlMain.visibility = View.GONE
+			fab.visibility = View.GONE
+		} else {
+			llLocked.visibility = View.GONE
+			srlMain.visibility = View.VISIBLE
+			fab.visibility = View.VISIBLE
+		}
+	}
+
+	fun showRefreshing() {
+		if (!srlMain.isRefreshing) {
+			srlMain.post({ srlMain.isRefreshing = true })
+		}
+	}
+
+	fun hideRefreshing() {
+		if (srlMain.isRefreshing) {
+			srlMain.post({ srlMain.isRefreshing = false })
+		}
+	}
+
+	override fun onRefresh() {
+		onResume()
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -99,7 +228,13 @@ class MainActivity: AppCompatActivity() {
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
-			R.id.action_settings -> return true
+			R.id.set_password -> {
+				if (TextUtils.isEmpty(MemoUtils.getPassword()) || !isLocked) {
+					setPassword()
+					return true
+				}
+				return false
+			}
 		}
 		return super.onOptionsItemSelected(item)
 	}

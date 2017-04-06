@@ -13,8 +13,6 @@ import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 import kotlinx.android.synthetic.main.card_memo.view.*
 import kotlinx.android.synthetic.main.dialog_add_memo.view.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 class MemoAdapter(var mContext: Context, var mMemos: RealmResults<Memo>?, autoUpdate: Boolean = true): RealmRecyclerViewAdapter<Memo, RecyclerView.ViewHolder>(mContext, mMemos as OrderedRealmCollection<Memo>?, autoUpdate) {
 
@@ -55,18 +53,11 @@ class MemoAdapter(var mContext: Context, var mMemos: RealmResults<Memo>?, autoUp
 		builder.create().show()
 	}
 
-	fun getDate(milliSecond: Long): String {
-		val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd a hh:mm:ss", Locale.getDefault())
-		val calendar = Calendar.getInstance()
-		calendar.timeInMillis = milliSecond
-		return simpleDateFormat.format(calendar.time)
-	}
-
 	internal inner class MemoHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 		fun bindMemo(memo: Memo) {
 			itemView.tvTitle.text = memo.title
 			itemView.tvContent.text = memo.content
-			itemView.tvDate.text = getDate(memo.date)
+			itemView.tvDate.text = MemoUtils.getDate(memo.date)
 		}
 	}
 }
