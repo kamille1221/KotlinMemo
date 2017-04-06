@@ -62,7 +62,7 @@ class MainActivity: AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 		if (!TextUtils.isEmpty(MemoUtils.getPassword()) && isLocked) {
 			login()
 		} else {
-			rvMain.adapter = MemoAdapter(this, getMemos())
+			rvMain.adapter = MemoAdapter(this, getMemos(), realm)
 			hideRefreshing()
 		}
 	}
@@ -89,7 +89,8 @@ class MainActivity: AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
 	fun commitRealm(title: String, content: String, date: Long) {
 		realm.beginTransaction()
-		val memo = realm.createObject(Memo::class.java)
+		val id: Int = realm.where(Memo::class.java).max("id")?.toInt() ?: 1
+		val memo = realm.createObject(Memo::class.java, id + 1)
 		memo.title = title
 		memo.content = content
 		memo.date = date
@@ -122,7 +123,7 @@ class MainActivity: AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 	}
 
 	fun getMemos(): RealmResults<Memo>? {
-		return realm.where(Memo::class.java).findAllSorted("date", Sort.DESCENDING)
+		return realm.where(Memo::class.java).findAllSorted("id", Sort.DESCENDING)
 	}
 
 	fun setPassword() {
