@@ -27,4 +27,6 @@
 	<string name="login">Login</string>
 	<string name="cancel">Cancel</string>
 	<string name="remove">Remove</string>
+	<string name="hint_pin">Input your PIN</string>
+	<string name="hint_pin2">Input your PIN again</string>
 </resources>

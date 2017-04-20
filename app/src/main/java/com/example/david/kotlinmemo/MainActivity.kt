@@ -7,11 +7,14 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
+import android.text.Editable
 import android.text.TextUtils
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
 import android.widget.Button
 import android.widget.Toast
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -129,36 +132,157 @@ class MainActivity: AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
 	fun setPassword() {
 		val resource: Int = R.layout.dialog_set_password
-		val view = this.layoutInflater.inflate(resource, null)
+		val dialogView = this.layoutInflater.inflate(resource, null)
 		val builder = AlertDialog.Builder(this)
 		builder.setTitle(getString(R.string.title_set_password))
-		builder.setView(view)
+		builder.setView(dialogView)
 		builder.setPositiveButton(getString(R.string.save), null)
 		builder.setNegativeButton(getString(R.string.cancel), null)
+
+		var passwordType: Int = MemoUtils.getLockMethod()
+		dialogView.sPassword.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+			override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+				when (position) {
+					0 -> {
+						passwordType = 0
+						dialogView.llPassword.visibility = View.VISIBLE
+						dialogView.llPin.visibility = View.GONE
+					}
+					1 -> {
+						passwordType = 1
+						dialogView.llPassword.visibility = View.GONE
+						dialogView.llPin.visibility = View.VISIBLE
+						dialogView.etPin11.addTextChangedListener(object: TextWatcher {
+							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+								dialogView.etPin12.requestFocus()
+							}
+
+							override fun afterTextChanged(s: Editable) {}
+						})
+						dialogView.etPin12.addTextChangedListener(object: TextWatcher {
+							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+								dialogView.etPin13.requestFocus()
+							}
+
+							override fun afterTextChanged(s: Editable) {}
+						})
+						dialogView.etPin13.addTextChangedListener(object: TextWatcher {
+							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+								dialogView.etPin14.requestFocus()
+							}
+
+							override fun afterTextChanged(s: Editable) {}
+						})
+						dialogView.etPin14.addTextChangedListener(object: TextWatcher {
+							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+								dialogView.etPin21.requestFocus()
+							}
+
+							override fun afterTextChanged(s: Editable) {}
+						})
+						dialogView.etPin21.addTextChangedListener(object: TextWatcher {
+							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+								dialogView.etPin22.requestFocus()
+							}
+
+							override fun afterTextChanged(s: Editable) {}
+						})
+						dialogView.etPin22.addTextChangedListener(object: TextWatcher {
+							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+								dialogView.etPin23.requestFocus()
+							}
+
+							override fun afterTextChanged(s: Editable) {}
+						})
+						dialogView.etPin23.addTextChangedListener(object: TextWatcher {
+							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+								dialogView.etPin24.requestFocus()
+							}
+
+							override fun afterTextChanged(s: Editable) {}
+						})
+					}
+				}
+			}
+
+			override fun onNothingSelected(parent: AdapterView<*>?) {}
+		}
+
 		val alertDialog: AlertDialog = builder.create()
 		alertDialog.setOnShowListener { dialog ->
 			val positiveButton: Button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
 			positiveButton.setOnClickListener {
-				val password1: String = view.etPassword1.text.toString()
-				val password2: String = view.etPassword2.text.toString()
-				if (TextUtils.isEmpty(password1) || TextUtils.isEmpty(password2)) {
-					if (TextUtils.isEmpty(MemoUtils.getPassword())) {
-						Toast.makeText(this, getString(R.string.toast_empty_passwords), Toast.LENGTH_SHORT).show()
-					} else {
-						Toast.makeText(this, getString(R.string.toast_remove_password), Toast.LENGTH_SHORT).show()
-						MemoUtils.setPassword("")
-						dialog.dismiss()
+				when (passwordType) {
+					0 -> {
+						val password1: String = dialogView.etPassword1.text.toString()
+						val password2: String = dialogView.etPassword2.text.toString()
+						if (TextUtils.isEmpty(password1) || TextUtils.isEmpty(password2)) {
+							if (TextUtils.isEmpty(MemoUtils.getPassword())) {
+								Toast.makeText(this, getString(R.string.toast_empty_passwords), Toast.LENGTH_SHORT).show()
+							} else {
+								Toast.makeText(this, getString(R.string.toast_remove_password), Toast.LENGTH_SHORT).show()
+								MemoUtils.setPassword(0, "")
+								dialog.dismiss()
+							}
+						} else if (password1.length < 8) {
+							Toast.makeText(this, getString(R.string.toast_short_password), Toast.LENGTH_SHORT).show()
+						} else if (password1 != password2) {
+							Toast.makeText(this, getString(R.string.toast_different_password), Toast.LENGTH_SHORT).show()
+						} else {
+							Toast.makeText(this, getString(R.string.toast_save_password), Toast.LENGTH_SHORT).show()
+							MemoUtils.setPassword(0, password1)
+							isLocked = true
+							dialog.dismiss()
+							onResume()
+						}
 					}
-				} else if (password1.length < 8) {
-					Toast.makeText(this, getString(R.string.toast_short_password), Toast.LENGTH_SHORT).show()
-				} else if (password1 != password2) {
-					Toast.makeText(this, getString(R.string.toast_different_password), Toast.LENGTH_SHORT).show()
-				} else {
-					Toast.makeText(this, getString(R.string.toast_save_password), Toast.LENGTH_SHORT).show()
-					MemoUtils.setPassword(password1)
-					isLocked = true
-					dialog.dismiss()
-					onResume()
+					1 -> {
+						val password1000: String = dialogView.etPin11.text.toString()
+						val password100: String = dialogView.etPin12.text.toString()
+						val password10: String = dialogView.etPin13.text.toString()
+						val password1: String = dialogView.etPin14.text.toString()
+						val password2000: String = dialogView.etPin21.text.toString()
+						val password200: String = dialogView.etPin22.text.toString()
+						val password20: String = dialogView.etPin23.text.toString()
+						val password2: String = dialogView.etPin24.text.toString()
+						val pin1: String
+						val pin2: String
+						if (TextUtils.isEmpty(password1000) || TextUtils.isEmpty(password100) || TextUtils.isEmpty(password10) || TextUtils.isEmpty(password1) || TextUtils.isEmpty(password2000) || TextUtils.isEmpty(password200) || TextUtils.isEmpty(password20) || TextUtils.isEmpty(password2)) {
+							if (TextUtils.isEmpty(MemoUtils.getPassword())) {
+								Toast.makeText(this, getString(R.string.toast_empty_passwords), Toast.LENGTH_SHORT).show()
+							} else {
+								Toast.makeText(this, getString(R.string.toast_remove_password), Toast.LENGTH_SHORT).show()
+								MemoUtils.setPassword(0, "")
+								dialog.dismiss()
+							}
+						} else {
+							pin1 = password1000 + password100 + password10 + password1
+							pin2 = password2000 + password200 + password20 + password2
+							if (pin1 != pin2) {
+								Toast.makeText(this, getString(R.string.toast_different_password), Toast.LENGTH_SHORT).show()
+							} else {
+								Toast.makeText(this, getString(R.string.toast_save_password), Toast.LENGTH_SHORT).show()
+								MemoUtils.setPassword(1, pin1)
+								isLocked = true
+								dialog.dismiss()
+								onResume()
+							}
+						}
+					}
 				}
 			}
 		}

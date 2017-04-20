@@ -9,6 +9,7 @@ object MemoUtils {
 	val MEMO_ID: String = "id"
 
 	private val PREFERENCE_NAME = "com.example.david.kotlinmemo"
+	private val LOCK_METHOD = "memo_lock_method"
 	private val PASSWORD = "memo_password"
 	private var sharedPreferences: SharedPreferences? = null
 
@@ -30,11 +31,16 @@ object MemoUtils {
 		return sharedPreferences?.getString(PASSWORD, "") ?: ""
 	}
 
-	fun setPassword(password: String) {
+	fun setPassword(lockMethod: Int, password: String) {
 		val editor = sharedPreferences?.edit()
 		if (editor != null) {
+			editor.putInt(LOCK_METHOD, lockMethod)
 			editor.putString(PASSWORD, password)
 			editor.apply()
 		}
+	}
+
+	fun getLockMethod(): Int {
+		return sharedPreferences?.getInt(LOCK_METHOD, 0) ?: 0
 	}
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="password">
+		<item>Normal password</item>
+		<item>PIN</item>
+		<item>FingerPrint</item>
+	</string-array>
+</resources>
