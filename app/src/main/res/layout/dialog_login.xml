@@ -23,4 +23,44 @@
 			android:textColor="@color/textColorPrimary"
 			android:textSize="18sp"/>
 	</android.support.design.widget.TextInputLayout>
+
+
+	<LinearLayout
+		android:id="@+id/llSetPin"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:orientation="horizontal">
+
+		<EditText
+			android:id="@+id/etPin1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:inputType="textPassword|number"
+			android:maxLength="1"
+			android:nextFocusDown="@+id/etPin2"/>
+
+		<EditText
+			android:id="@+id/etPin2"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:inputType="textPassword|number"
+			android:maxLength="1"
+			android:nextFocusDown="@+id/etPin3"/>
+
+		<EditText
+			android:id="@+id/etPin3"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:inputType="textPassword|number"
+			android:maxLength="1"
+			android:nextFocusDown="@+id/etPin4"/>
+
+		<EditText
+			android:id="@+id/etPin4"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:inputType="textPassword|number"
+			android:maxLength="1"/>
+	</LinearLayout>
 </LinearLayout>

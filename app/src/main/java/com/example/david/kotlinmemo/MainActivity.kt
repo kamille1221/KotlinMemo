@@ -155,65 +155,109 @@ class MainActivity: AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 						dialogView.etPin11.addTextChangedListener(object: TextWatcher {
 							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-								dialogView.etPin12.requestFocus()
-							}
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
-							override fun afterTextChanged(s: Editable) {}
+							override fun afterTextChanged(s: Editable) {
+								if (s.isNotEmpty()) {
+									dialogView.etPin12.requestFocus()
+								}
+							}
 						})
 						dialogView.etPin12.addTextChangedListener(object: TextWatcher {
 							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-								dialogView.etPin13.requestFocus()
-							}
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
-							override fun afterTextChanged(s: Editable) {}
+							override fun afterTextChanged(s: Editable) {
+								if (s.isNotEmpty()) {
+									dialogView.etPin13.requestFocus()
+								} else {
+									dialogView.etPin11.requestFocus()
+									dialogView.etPin11.setSelection(0, 1)
+								}
+							}
 						})
 						dialogView.etPin13.addTextChangedListener(object: TextWatcher {
 							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-								dialogView.etPin14.requestFocus()
-							}
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
-							override fun afterTextChanged(s: Editable) {}
+							override fun afterTextChanged(s: Editable) {
+								if (s.isNotEmpty()) {
+									dialogView.etPin14.requestFocus()
+								} else {
+									dialogView.etPin12.requestFocus()
+									dialogView.etPin12.setSelection(0, 1)
+								}
+							}
 						})
 						dialogView.etPin14.addTextChangedListener(object: TextWatcher {
 							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-								dialogView.etPin21.requestFocus()
-							}
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
-							override fun afterTextChanged(s: Editable) {}
+							override fun afterTextChanged(s: Editable) {
+								if (s.isNotEmpty()) {
+									dialogView.etPin21.requestFocus()
+								} else {
+									dialogView.etPin13.requestFocus()
+									dialogView.etPin13.setSelection(0, 1)
+								}
+							}
 						})
 						dialogView.etPin21.addTextChangedListener(object: TextWatcher {
 							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-								dialogView.etPin22.requestFocus()
-							}
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
-							override fun afterTextChanged(s: Editable) {}
+							override fun afterTextChanged(s: Editable) {
+								if (s.isNotEmpty()) {
+									dialogView.etPin22.requestFocus()
+								} else {
+									dialogView.etPin14.requestFocus()
+									dialogView.etPin14.setSelection(0, 1)
+								}
+							}
 						})
 						dialogView.etPin22.addTextChangedListener(object: TextWatcher {
 							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-								dialogView.etPin23.requestFocus()
-							}
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
-							override fun afterTextChanged(s: Editable) {}
+							override fun afterTextChanged(s: Editable) {
+								if (s.isNotEmpty()) {
+									dialogView.etPin23.requestFocus()
+								} else {
+									dialogView.etPin21.requestFocus()
+									dialogView.etPin21.setSelection(0, 1)
+								}
+							}
 						})
 						dialogView.etPin23.addTextChangedListener(object: TextWatcher {
 							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-								dialogView.etPin24.requestFocus()
-							}
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
-							override fun afterTextChanged(s: Editable) {}
+							override fun afterTextChanged(s: Editable) {
+								if (s.isNotEmpty()) {
+									dialogView.etPin24.requestFocus()
+								} else {
+									dialogView.etPin22.requestFocus()
+									dialogView.etPin22.setSelection(0, 1)
+								}
+							}
+						})
+						dialogView.etPin24.addTextChangedListener(object: TextWatcher {
+							override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+							override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+							override fun afterTextChanged(s: Editable) {
+								if (s.isEmpty()) {
+									dialogView.etPin23.requestFocus()
+									dialogView.etPin23.setSelection(0, 1)
+								}
+							}
 						})
 					}
 				}
@@ -291,17 +335,90 @@ class MainActivity: AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
 	fun login() {
 		val resource: Int = R.layout.dialog_login
-		val view = this.layoutInflater.inflate(resource, null)
+		val dialogView = this.layoutInflater.inflate(resource, null)
 		val builder = AlertDialog.Builder(this)
+		val lockMethod = MemoUtils.getLockMethod()
 		builder.setTitle(getString(R.string.login))
-		builder.setView(view)
+		builder.setView(dialogView)
 		builder.setPositiveButton(getString(R.string.login), null)
 		builder.setNegativeButton(getString(R.string.cancel), null)
+		when (lockMethod) {
+			0 -> {
+				dialogView.tilPassword.visibility = View.VISIBLE
+				dialogView.llSetPin.visibility = View.GONE
+			}
+			1 -> {
+				dialogView.tilPassword.visibility = View.GONE
+				dialogView.llSetPin.visibility = View.VISIBLE
+				dialogView.etPin1.addTextChangedListener(object: TextWatcher {
+					override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+					override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+					override fun afterTextChanged(s: Editable) {
+						if (s.isNotEmpty()) {
+							dialogView.etPin2.requestFocus()
+						}
+					}
+				})
+				dialogView.etPin2.addTextChangedListener(object: TextWatcher {
+					override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+					override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+					override fun afterTextChanged(s: Editable) {
+						if (s.isNotEmpty()) {
+							dialogView.etPin3.requestFocus()
+						} else {
+							dialogView.etPin1.requestFocus()
+							dialogView.etPin1.setSelection(0, 1)
+						}
+					}
+				})
+				dialogView.etPin3.addTextChangedListener(object: TextWatcher {
+					override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+					override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+					override fun afterTextChanged(s: Editable) {
+						if (s.isNotEmpty()) {
+							dialogView.etPin4.requestFocus()
+						} else {
+							dialogView.etPin2.requestFocus()
+							dialogView.etPin2.setSelection(0, 1)
+						}
+					}
+				})
+				dialogView.etPin4.addTextChangedListener(object: TextWatcher {
+					override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+					override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+					override fun afterTextChanged(s: Editable) {
+						if (s.isEmpty()) {
+							dialogView.etPin3.requestFocus()
+							dialogView.etPin3.setSelection(0, 1)
+						}
+					}
+				})
+			}
+		}
 		val alertDialog: AlertDialog = builder.create()
 		alertDialog.setOnShowListener { dialog ->
 			val positiveButton: Button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
 			positiveButton.setOnClickListener {
-				val password: String = view.etPassword.text.toString()
+				val password: String
+				when (lockMethod) {
+					0 -> {
+						password = dialogView.etPassword.text.toString()
+					}
+					1 -> {
+						password = dialogView.etPin1.text.toString() + dialogView.etPin2.text.toString() + dialogView.etPin3.text.toString() + dialogView.etPin4.text.toString()
+					}
+					else -> {
+						password = ""
+					}
+				}
 				if (TextUtils.isEmpty(password)) {
 					Toast.makeText(this, getString(R.string.toast_empty_password), Toast.LENGTH_SHORT).show()
 				} else if (password != MemoUtils.getPassword()) {
